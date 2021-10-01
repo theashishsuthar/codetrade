@@ -5,7 +5,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
-class LoginCtr extends ChangeNotifier {
+class MainControll extends ChangeNotifier {
   DatabaseHelper con = new DatabaseHelper();
 
   //To save User

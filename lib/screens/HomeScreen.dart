@@ -52,6 +52,8 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  //Sign up form which takes username and password input
+
   Widget signUpForm() {
     return Padding(
       padding: EdgeInsets.symmetric(
@@ -73,6 +75,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           MaterialButton(
             onPressed: () {
+              //Validations
               if (_userNameController.text.trim().length != 0 &&
                   _passwordController.text.trim().length != 0) {
                 User user = User(
@@ -81,7 +84,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
                 FocusScope.of(context).unfocus();
 
-                Provider.of<LoginCtr>(context, listen: false)
+                //Function to store data
+
+                Provider.of<MainControll>(context, listen: false)
                     .saveUser(user)
                     .then((value) {
                   print(value);
@@ -89,12 +94,14 @@ class _HomeScreenState extends State<HomeScreen> {
                     //Succesfuly validating
                     toastMessage('User added successfully');
                   } else {
+                    //Error handling part
                     FlutterToast(
                       context,
                     ).showToast(child: Text('Something went wrong'));
                   }
                 });
               } else {
+                //Validations
                 FocusScope.of(context).unfocus();
                 toastMessage('All fields are manadatory');
               }
@@ -115,7 +122,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget userList() => Container(
         child: Container(
             child: FutureBuilder(
-          future: Provider.of<LoginCtr>(context).fetchUser(),
+          future: Provider.of<MainControll>(context).fetchUser(),
           builder: (BuildContext context, AsyncSnapshot<List<User>> snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return Center(
@@ -131,28 +138,35 @@ class _HomeScreenState extends State<HomeScreen> {
               } else if (snapshot.hasData) {
                 return Container(
                   height: MediaQuery.of(context).size.height,
-                  child: ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: snapshot.data.length,
-                      itemBuilder: (BuildContext context, int i) {
-                        return Card(
-                          child: ListTile(
-                            leading: Icon(Icons.person),
-                            title: Text(snapshot.data[i].userName),
-                            trailing: Container(
-                                child: IconButton(
-                                    onPressed: () {
-                                      Provider.of<LoginCtr>(context,
-                                              listen: false)
-                                          .deleteUser(snapshot.data[i].iD);
-                                    },
-                                    icon: Icon(
-                                      Icons.delete,
-                                      color: Colors.red,
-                                    ))),
+                  child: snapshot.data.length != 0
+                      ? ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: snapshot.data.length,
+                          itemBuilder: (BuildContext context, int i) {
+                            return Card(
+                              child: ListTile(
+                                leading: Icon(Icons.person),
+                                title: Text(snapshot.data[i].userName),
+                                trailing: Container(
+                                    child: IconButton(
+                                        onPressed: () {
+                                          //deletetion function
+                                          Provider.of<MainControll>(context,
+                                                  listen: false)
+                                              .deleteUser(snapshot.data[i].iD);
+                                        },
+                                        icon: Icon(
+                                          Icons.delete,
+                                          color: Colors.red,
+                                        ))),
+                              ),
+                            );
+                          })
+                      : Container(
+                          child: Center(
+                            child: Text('No Users here yet'),
                           ),
-                        );
-                      }),
+                        ),
                 );
               } else {
                 return Container(
@@ -163,6 +177,8 @@ class _HomeScreenState extends State<HomeScreen> {
           },
         )),
       );
+
+  //login form
 
   Widget loginForm() {
     return Padding(
@@ -193,7 +209,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                 FocusScope.of(context).unfocus();
 
-                Provider.of<LoginCtr>(context, listen: false)
+                Provider.of<MainControll>(context, listen: false)
                     .getLogin(
                         _userNameController.text, _passwordController.text)
                     .then((value) {
